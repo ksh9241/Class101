@@ -1,0 +1,19 @@
+VM과 다른 부분 : 각각의 인스턴스에 독립적인 운영체제로 동작하지않고 하나의 프로세스처럼 동작함.
+상대적으로 리소스를 적게 사용함. 성능의 이점이 있음.
+
+IaC(Infrastructure as Code) : 도커는 도커파일이라는 파일에 운영체제, 실행 명령어를 저장해두고 실행하면 항상 동일한 환경이 구성됨.
+
+Docker Desktop = Docker + GUI (윈도우 충돌일어남 설치 x)
+
+ - Docker build -
+1. sudo yum install docker (도커 설치)
+2. 설치 도중 체크 부분 에서 y누르고 엔터 
+3. sudo systemctl start docker
+4. sudo docker run -d -p 80:80 docker/getting-started
+5. gcp 외부 ip를 url에 입력하여 도커 연결을 확인한다.
+
+
+
+1,2 (설치) -> 3,4(docker 실행) ->5(확인)
+* 1024번 이하의 포트는 well-known port라고 부름. 근데 이 포트들을 열 때에는 관리자 권한이 필요함.
+관리자 권한 = sudo

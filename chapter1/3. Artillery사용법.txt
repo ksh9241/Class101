@@ -1,0 +1,18 @@
+0. npm install -g artilley (최소1회)
+1. 파일명.yaml 생성
+2. https://artillery.io/docs/guides/getting-started/core-concepts.html 에서 example code 붙여넣기
+3. gcp SSH 들어가서 서버 실행
+4. 1번에서 만든 폴더로 들어가서 target: "http/외부IP" 로 변경
+5. scenarios - url 및 name 변경
+6. phases 의미 : duration(초) 동안 arrivalrate(매초 새로운 virtual user[가상유저])명을 만듭니다.
+7. 세팅이 끝났으면 터미널에서 실행 (artillery.cmd run --output report.json .\cpu-test.yaml [실행할 파일명] )
+8. 테스트 종료 후 report-json파일 생성 이 파일을 html형태로 만드는 command (artillery.cmd report .\report.json [변경할 json파일명] )
+9. 새창으로 데이터를 보여주는데 가장 중요한 데이터는 Latency At Intervals (가로축 : 시간, 세로축 : 지연시간)
+
+그래프가 튀어오른 이유 : VM은 인접하고 있는 인스턴스들과 자원을 공유하기 때문에 항상 똑같은 수준의 퀄리티를 보장할 수 없다.
+
+성능테스트 기준
+1. 항상 예상 TPS보다 여유롭게 성능 목표치를 잡는다. 예상 TPS가 1000이라면 튀는 상황을 고려해서 3000~4000 혹은 그 이상으로 여유롭게 인스턴스를 구성한다.
+2. API에 기대하는 Latency를 만족할 때까지 성능을 테스트해야 한다.
+3. 단일 요청에 대한 Latency가 몇인지 확인해보기. (단일 Latency가 기대하는 Latency보다 높다면 이건 Scale-out으로 해결되지않는다.)
+ * 이 경우 코드가 비효율적으로 작성되었거나, 해당 API에서 실행되는 I/O 가 병목인 경우가 많다.

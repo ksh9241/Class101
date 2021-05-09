@@ -1,0 +1,48 @@
+-실습 
+- cpu-bound-application 3개(서버 3개)를 만들기 위한 방법
+메뉴에 머신이미지 클릭 (기존에 만들었던 instance를 복제하는 기능) -> 머신이미지 만들기 -> 이름설명 입력 -> 소스 VM 인스턴스에서 복제할 인스턴스 선택(worker instance) ->row의 작업에서 인스턴스 만들기 클릭
+- jenkins 성능향상 경고 처리.(난 안뜸)
+- jenkins instance start jenkins 명령어 실행
+- dashboard jenkins 관리 -> 시스템설정 -> 제일 하단에 인스턴스 2,3도 추가
+- item 재사용 -> 구성 -> 빌드 후 조치 부분 AddServer 클릭 -> 인스턴스 2,3 추가 후 /dev/null -> nohup.out 변경
+/dev/null => 로그를 휴지통으로 보내는 것. | 바뀐점 : 로그를 nohup.out으로 보냄
+- SSD 에서 tail -f nohup.out 할시 docker 실행 아니라고 나옴.(도커실행, docker.sock 권한 부여)
+
+- Nginx 세팅
+GCP 인스턴스 만들기 -> 생성 후 SSH 접속 -> nginx install -> start nginx
+
+-Nginx가 로드밸렁싱을 하도록 설정하기.
+1. sudo vi /etc/nginx/nginx.conf 입력.
+2. upstream과 server > location > proxy정보가 있어야 로드밸런싱을 할 수 있는 환경이 완성된다.
+3. nginx load balancing 검색 해서 example있으니 찾아볼수있음.
+4. Shell에서 i를 눌러 insert모드로 변경 후 include /etc/nginx/conf.d/*.conf; 아래 엔터치고 upstream 추가
+5. esc -> :wq
+6. sudo systemctl reload nginx 으로 nginx 리로드
+7. sudo tail -f /var/log/nginx/error.log 에러로그 확인하는 명령어
+8. sudo setsebool -P httpd_can_network_connect on 명령어를 통해 connect() 를 차단하는 것을 풀어줌.
+
+
+// {}안에는 인스턴스 내부 ip
+upstream cpu-bound-app { 
+  server {10.178.0.13}:8080 weight=100 max_fails=3 fail_timeout=3s;
+  server {10.178.0.15}:8080 weight=100 max_fails=3 fail_timeout=3s;
+  server {10.178.0.16}:8080 weight=100 max_fails=3 fail_timeout=3s;
+}
+
+// location 안의 내용
+  proxy_pass http://cpu-bound-app;
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection 'upgrade';
+  proxy_set_header Host $host;
+  proxy_cache_bypass $http_upgrade;
+
+세팅 후 404에러 처리 : sudo setsebool -P httpd_can_network_connect on
+
+nginx restart 와 reload 의 차이점
+restart : server를 내렸다가 다시 올리는 것.
+reload : 아주 짧은 downtime이 존재한다. 때문에 로드밸런싱 설정이 바뀌어야 할 경우 nginx도 이중으로 구성할 필요가 있다.
+
+가장 큰 차이는 프로세스가 종료 되는지 여부이다.
+restart 는 프로세스를 종료했다가 다시 시작한다.
+reload 는 프로세스는 종료되지 않고 설정 파일만 다시 로드한다.

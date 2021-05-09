@@ -1,0 +1,13 @@
+JDK, JRE, JVM 차이 : https://pjuyeon25.medium.com/java-jdk-jre-jvm-%EC%B0%A8%EC%9D%B4-b5a60fe4653
+SSH이란? : https://baked-corn.tistory.com/52
+
+프로세스 스케줄링 : https://velog.io/@hax0r/%EC%84%A0%EC%A0%90%EB%B9%84%EC%84%A0%EC%A0%90-%ED%94%84%EB%A1%9C%EC%84%B8%EC%8A%A4-%EC%8A%A4%EC%BC%80%EC%A4%84%EB%A7%81
+
+포워드 프록시와 리버스 프록시의 차이 : https://www.lesstif.com/system-admin/forward-proxy-reverse-proxy-21430345.html
+
+배포종류 : https://reference-m1.tistory.com/211
+
+로드밸런싱이란? : https://d2.naver.com/helloworld/284659 
+	           https://velog.io/@makeitcloud/%EB%9E%80-L4-load-balancer-vs-L7-load-balancer-%EB%9E%80
+
+.git 이해 : https://jusths.tistory.com/64

@@ -1,0 +1,19 @@
+- keyword : spring boot docker (https://spring.io/guides/gs/spring-boot-docker/)
+- docker hub signUp
+
+- Docker file을 image build하고 실행하는 작업. -
+1. Directory 내 new file -> keyword 페이지 내 Containerize It(example 1 dockerfile 붙여넣기)
+2. docker hub -> repositories -> create repository -> name,description 적은 후 create -> Docker commands 내용 확인.
+3. keyword 페이지 내 Maven Command 형식 보고 3의 Docker commands의 내정보로 터미널에 입력.
+4. success확인 후 docker run -p 8080:8080 [도커허브아이디]/[도커허브이름] 커맨드 사용하여 로컬에서 실행
+
+- image를 Docker Hub Upload
+5. docker login -> ksh9241 (username) -> Rlatpghks1!(pwd) -> login success
+6. Docker commands의 내정보로 터미널에 입력.
+7. Docker hub에서 업로드 확인.
+
+- GCP인스턴스에서 Docker Hub 실행시키기.
+1. sudo yum install docker
+2. sudo systemctl start docker
+3. sudo docker pull [도커아이디]/[도커이름]
+4. sudo docker run -p 80:80 [도커아이디]/[도커이름]

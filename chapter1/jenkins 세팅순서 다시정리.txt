@@ -1,0 +1,21 @@
+- GCP에서 인스턴스 2개 생성.
+- jenkins SSH 실행
+- jenkins instance install (wget,maven,git,docker, jenkins pakage, jenkins)
+- jenkins deamon start
+- GCP 방화벽 8080포트 허용 작업
+- jenkins instance 외부IP:8080 dashboard jenkins 접속
+- jenkins SSH에서 초기비밀번호 받기.
+-dashboard jenkins 관리 -> 플러그인 -> ssh 검색 후 publish ssh....다운
+- jenkins 비대칭 키 생성.
+- worker 공개키 등록
+- worker chmod 700, 600 권한 부여
+- dashboard jenkins관리 -> 시스템설정 -> Publish over SSH 탭 입력
+- 새로운 item 관리 -> freestyle project
+- 관리자 권한이없다고 나옴. 구성으로 들어가서 Exec command 명령어 변경.
+최초 : sudo docker run -p 80:80 lleellee0/spring-boot-cpu-bound
+1차 변경 : docker run -p 8080:80 lleellee0/spring-boot-cpu-bound
+- 도커가 없다고 나옴.(worker instance docker install) 이후 도커실행
+- docker.sock의 파일권한이 없다고 나옴. 권한부여
+- jenkins가 배포가 끝나지않았다고 인식함.
+- 구성에서 실행스크립트 명령어 변경
+최종 변경 : nohup docker run -p 8080:80 lleellee0/spring-boot-cpu-bound > /dev/null 2>&1 &
