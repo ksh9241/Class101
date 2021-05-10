@@ -1,0 +1,40 @@
+저장소에 푸쉬하고 웹훅을 설정하는건 저장소에 권한이 있어야 한다.
+깃 허브 repository(저장소)를 복제하는 것 : fork(포크)
+
+배포 자동화가 이루어지는 과정 :
+로컬에서 GitHub로 푸쉬가 이루어지면, GitHub에선 jenkins로 알려줍니다. 그 후 jenkins에서는 새로운 코드를 빌드하고, 빌드가 완료되면 jar 파일로 패키징 후 GCP 인스턴스로 배포합니다.
+
+젠킨스 대쉬보드
+- jenkinse 외부아이피:8080 으로 들어와서 만들어둔 deploy 클릭 후 구성으로 이동
+- 소스코드 관리 none -> Git으로 변경
+- Repository URL GitHub에서 복사 후 붙여넣기
+- 하단 빌드 유발에서 GitHub hook trigger for GITScm polling 체크박스 체크
+- Build 항목에서 Execute shell로 selectbox 변경 (Commend에서 명령어를 입력하여 Maven으로 Deploy(배포)할 준비를 해야한다. (jar파일 생성)
+- Command에 ./mvnw clean package 입력 (mvnw를 이용하여 jar파일을 만드는 명령어)
+- 저장 후 build Now 실행
+- permission denied 오류발생 
+(이유 : 우리가 만들어 준 스프링부트 애플리케이션이 윈도우에서 생성되었기 때문이다. 윈도우에서는 mvnw에 실행권한을 주지 못하기 떄문에 리눅스로 그 파일이 옮겨왔을 때 실행권한이없어서 오류가 발생함.)
+- Execute shell로 이동하여 chmod 544 ./mvnw 명령어를 추가하여 mvnw의 실행권한 부여
+(최종 Command : chmod 544 ./mvnw (\t) ./mvnw clean package)
+- 성공 시 building jar : .../target 부터 jar파일 경로를 복사
+- 구성으로 가서 빌드 후 조치 -> Source files경로 붙여넣기 -> Remove prefix : target -> Exec command : sudo java -jar {/cpu-0.0.1-SNAPSHOT.jar} (jar파일 경로)
+(jenkins의 공개키를 가지고 있는 모든 instance의 command 변경)
+- build now 진행 시 instance에 java가 없다는 에러 메시지 뜸 -> instance ssh로 가서 sudo yum install java 커맨드 명령어 실행
+- nohup sudo java -jar {jar file name} > nohup.out 2>&1 & 으로 Exec command 변경
+
+문제점 : nginx 포트번호를 8080으로 설정했는데 jar파일의 포트번호는 80번으로 나옴
+해결 방안 : 
+ - instance1,2,3 ssh 실행
+ - ps -aux | grep java 명령어 입력
+ - sudo kill -9 {프로세스ID} (프로세스 죽이기)
+ - ps -aux | grep java 명령어 입력하여 프로세스 죽은거 확인
+
+github repository -> settings -> webhooks -> add webhook -> payload URL입력 (젠킨스 board의 외부ip:포트번호/github-webhook/ {http://34.64.230.114:8080/github-webhook/} -> Content type(application/json)으로 변경
+
+- instance1,2,3 에서 sudo yum install -y lsof 설치 후 jenkins 빌드 후 조치 Exec command로 이동
+- sudo kill -15 $(sudo lsof -t -i:8080) 을 제일 앞에 추가
+
+spring-boot 에서 jar파일 만들어지는 과정
+- intellyJ에서 우측 상단에 Maven Click
+- clean클릭 시 좌측 target directory 없어짐.
+- 우측 Maven 클릭 후 package클릭 시 target directory 다시 생성 (안에 .jar파일도 생김)
