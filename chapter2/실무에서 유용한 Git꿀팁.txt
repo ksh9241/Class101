@@ -1,0 +1,40 @@
+1. Git-flow 
+- github new repository 생성(ReadME추가)
+- sourcetree를 통해서 clone 후 좌측 상단 깃 플로우 클릭
+- 제품브랜치 : main으로 변경
+- 실습을 위해 vscode로 directory open
+- sourcetree 좌측 상단 깃 플로우 클릭 -> 새 기능 시작 클릭 ->개발할 기능명 입력 ->확인
+- feature/기능명 으로 된 branch생성됨.
+- 개발이 끝나면 깃플로우에 기능 마무리 버튼 클릭(develop으로 merge됨)(보통 rebase를 하여 줄기를 없애고 일자로 만드는 걸 선호하는 편이긴 하다.)
+- 이후 develop에서 새 릴리즈를 시작. (릴리즈명은 version으로 많이 사용)
+- 테스트가 끝난 후 릴리즈 마무리 클릭 (tag(명찰모양)  : tag는 배포할 때 branch 이름 대신으로 사용할 수 있다.)
+- 릴리즈를 마무리하게 되면 develop이랑 main이랑 같은 상태가 된다.
+
+- 핫픽스 기능도 찾아보고 실습하기.
+
+2. Pull Request merge하기
+- sourcetree에서 push버튼 클릭
+- 로컬과 원격지의 상태가 둘다 push한 브랜치명으로 된다.
+- branch 생성 후 new file 뒤 commit처리
+- 생성한 branch를 push
+-------------(준비단계 끝)-------------------
+- 깃허브의 repository로 이동 후 pull requests 클릭
+- 셀렉박스 왼쪽 : branch 로 , 오른쪽 : branch 가 merge하겠다. 를 정하고 create pull request 클릭
+- Reviewers를 정하고 Assignees를 정한다.
+- 생성 후 2가지 action을 할 수 있다.
+    - close pull request : open된 pull request를 닫는다.
+    - pull request를 merge할 수 있다.
+- merge pull request를 한 뒤 sourcetree로 가서 develop branch로 이동 후 pull를 누른다. (branch 결과보기)
+
+3. 마지막 commit 수정하기
+- branch 생성
+- 커밋 중 메시지 잘못 입력 후 커밋
+- 커밋 버튼 클릭 후 우측하단 커밋 옵션 -> 마지막 커밋 정정
+
+* push한 데이터 수정하기
+
+
+4. 원하는 commit만 가져와 현재 branch에 붙이기
+- branch 생성
+- develop branch로 변경
+- merge하고싶은 커밋 우클릭 후 체리 픽 클릭
