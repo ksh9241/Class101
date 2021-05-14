@@ -11,3 +11,5 @@ SSH이란? : https://baked-corn.tistory.com/52
 	           https://velog.io/@makeitcloud/%EB%9E%80-L4-load-balancer-vs-L7-load-balancer-%EB%9E%80
 
 .git 이해 : https://jusths.tistory.com/64
+
+VM 설명 : https://www.redhat.com/ko/topics/virtualization/what-is-a-virtual-machine
