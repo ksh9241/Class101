@@ -13,3 +13,11 @@ SSH이란? : https://baked-corn.tistory.com/52
 .git 이해 : https://jusths.tistory.com/64
 
 VM 설명 : https://www.redhat.com/ko/topics/virtualization/what-is-a-virtual-machine
+
+.yaml 와 .properties의 차이점 : https://goddaehee.tistory.com/213
+
+Docker volume이란? : https://www.daleseo.com/docker-volumes-bind-mounts/
+
+PR 의 3가지 방법 : https://meetup.toast.com/posts/122
+
+spring-boot profile 적용하기 : https://effectivesquid.tistory.com/entry/Spring-boot-profile-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0
