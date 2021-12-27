@@ -58,7 +58,6 @@ active(running) == worker setting 실행
 2. 대상 처리 (네트워크의 모든 인스턴스)
 3. 소스 IP 범위 (0.0.0.0/0 : 모든범위)
 4. 프로토콜 및 포트 지정된 프로토콜 및 포트 체크 (tcp : 방화벽 허용 포트번호 입력)
-
 - jenkins 개인키 및 공개키 만들기 튜토리얼
 1. ssh-keygen -t rsa -f ~/.ssh/id_rsa ->엔터 -> 엔터
 2. 키정보 확인법 cd .ssh -> ls -> 왼쪽 개인키, 오른쪽 공개키
