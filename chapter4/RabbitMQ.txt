@@ -1,0 +1,37 @@
+# RabbitMQ를 도커로 실행시키기 위한 명령어
+docker run -d --hostname my-rabbit --name some-rabbit -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+
+- guest/guest 로그인
+- queues 탭 클릭
+- Add a new queue -> name input박스에서 CREATE_POST_QUEUE 네임 지정
+- add queue 클릭
+- 생성된 MQ 클릭
+
+
+- publish message 열어서 payload에 json형식으로 메시지 입력 후 publish message 버튼 클릭
+- get messages로 가서 개수 입력 후 Get Messages(s) 버튼 클릭
+(이때 Ack Mode가 requeue true일 경우 메시지를 꺼낸 뒤 다시 Queue에 담고 false일 경우 꺼낸 뒤 담지 않는다.)
+
+SpringBoot 에서 RabbitMQ 사용하기
+- MQ Dependency 추가
+- application.properties , yaml에 host, username, password, port 추가
+
+* MQ에 데이터 넣기
+- Producer 오브젝트 생성
+- RabbitTemplate 필드 의존성 주입
+- rabbitTemplate.convertAndSend(MQ 생성 name, String message);
+- 컨트롤러에서 @RequestBody로 읽어온 DTO타입의 데이터를 ObjectMapper 의 writeValueAsString()으로 String 타입으로 변환한다.
+
+* MQ의 데이터 DB에 넣기
+- Consumer 오브젝트 생성
+- ObjectMapper와 DB와 연결된 Repository 의존성 주입
+- @RabbitListener( queues = "MQ에서 생성한 name") 으로 메서드 생성
+(@RabbitListener 큐에 메시지가 들어오면 어노테이션이 있는 메서드가 호출됨.)
+- objectMapper.readValue(컨트롤러에서 보낸 스트링타입 데이터, 컨트롤러에서 받은 DTO.class); MQ에서 읽으면서 원래 오브젝트 타입으로 변환
+- Repository.method()로 DB 데이터 넣기
+
+* 크론표현식
+@Scheduled 어노테이션을 사용하는 것을 말하며 1초에 한번씩 메서드가 실행된다.
+
+@EnableScheduling : Application 에 이 어노테이션을 추가해야 @Scheduled 어노테이션을 사용할 수 있다. @EnableScheduling 스프링 스케줄링 기능 활성화의 의미를 내포한다.
