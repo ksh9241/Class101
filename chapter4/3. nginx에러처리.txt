@@ -1,0 +1,11 @@
+Nginx 에러로그를 확인하기 위한 명령어
+sudo tail -f /var/log/nginx/error.log
+
+Nginx 에러 로그에 socket() failed (24 : To many open files) 의 에러가 존재할 경우
+각 프로세스의 nofile limit을 올려야 한다.
+
+1. ps -aux | grep nginx (nginx의 프로세스 아이디 (PID) 를 알아내기 위한 명령어
+2. nginx의 worker process가 문제이기 때문에 PID 확인
+3. sudo prlimit --nofile --output RESOURCE,SOFT,HARD --pid 1234 ( <- worker Process PID 4자리) [nofile limit 조회 ]
+4. sudo cat /proc/sys/fs/file-max (현재 시스템의 nofile limit을 몇 까지 올릴 수 있는지 확인하는 명령어)
+5. sudo prlimit --nofile=100000 --pid=1234 (nofile limit의 최대치를 수정하는 명령어)
