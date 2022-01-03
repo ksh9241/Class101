@@ -1,0 +1,14 @@
+1. elasticsearch-head 구글 확장자로 들어가기
+2. ip:9200포트로 connect
+3. indices tab 클릭 후 new Index
+4. index Name, shard, replica 설정
+5. ip:9200/indexName url로 delete REST 호출
+6. 결과값 true일 경우 인덱스가 정상 삭제됨.
+
+ES로 조회 시 너무 많은 문서에 매칭되었을 때 역인덱스의 효과가 제대로 발휘되기 어렵기 때문에 DB로 조회를 했을 때보다 낮은 성능의 결과를 보여준다.
+
+Forward Index
+보통 index라고 말하는 것은 forward index를 의미한다.어떠한 주어진 document들로 index를 생성하면 Document가 Key에 해당하고 document에 존재하는 word들이 value에 해당한다.
+
+inverted index
+word가 Key가 되고, 그 word가 존재하는 document들이 value가 된다.

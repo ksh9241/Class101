@@ -1,0 +1,75 @@
+- Elasticsearch와 DB의 차이점
+1. 문서저장방식
+	- DB : 컬럼당 하나의 데이터가 들어간다. 문서가 순서대로 위치한다. 직관적이다. 특정 조건을 찾을 때 모든 문서를 탐색해야 한다.
+	
+	- Elasticsearch : DB처럼 일반적인 인덱스도 남기지만 단어단위로 잘라서 어디에 위치하는지 기록한다. (이런 방식을 역 색인, Inverted Index 라고 함.)
+		       형태소 분석기 -> 노리(Nori) : 영어로 된 경우는 재미, 재미있다 의 단어를 동일하게 검색해주지만 한글로 된 경우 Nori 플러그인을 통해 같은 의미임을 알려줘야 함.
+
+2. shard : shard란 하나의 문서에 100개의 데이터가 있을 때 이걸 특정 개수로 분할하여 저장하는 것. 여기까지만 보면 DB의 파티션과 비슷해보이지만 shard의 경우 분할한 각 데이터를 각각의 노드에 나눠서 실	행시켜 병렬처리(?) 형태로 더 빠른 검색이 가능하다. 이보다 더 성능을 올리고 싶은경우 노드를 Scale Out을 하여 더 분할한다. ( shard는 ES의 고유 기술이 아니고 DB에서도 적용가능하다. )
+
+3. Replica : 본사본을 의미한다. 특정 노드에 문제가 발생하여 내려갔을 떄 해당 노드가 가지고 있는 데이터를 다른 노드에도 저장하는 것. (서비스의 이슈가 없음.)
+	 동일 레플리카는 동일한 노드에 저장되지 않는다. (예시로 1번노드와 2번노드의 데이터가 같고, 3번노드와 4번노드의 데이터가 같을 때 1번노드가 죽었으면 2번노드에 데이터를 쌓는것이 아닌 3번 혹은 4번 노드에 데이터를 복사한다.)
+
+- 서버에 ES Instance 노드 만들기
+1. GCP에 es-instance1 ~ 4까지 만든다.
+2. SSH를 실행
+3. sudo yum install -y docker로 es에 도커 설치 ( 실제 윈도우에서 설치가 안된상태라 이론만 작성 )
+4. sudo systemctl start docker 로 도커 프로세스 실행
+5. sudo chmod 666 /var/run/docker.sock  docker.sock파일에 권한을 666으로 변경
+6. sudo sysctl -w vm.max_map_count=262144 명령어로 ES의 가상메모리 사이즈를 키워준다. (기존 가상메모리는 작게 설정되어있지만 ES에서는 많은 가상메모리를 필요하기 때문에 변경함.)
+7. 아래 실행 명령어에서 2번부터 순차적으로 실행한다. (ip 수정 필요)
+8. GCP의 방화벽 규칙만들기 -> 9200 포트 방화벽 열어주기
+9. ES 외부아이피:9200 으로 url이동했을 때 es정보가 뜨면 클러스터가 정상적으로 연결된 상태임.
+
+- ES는 DB의 상위호환인가?
+1. 실시간 처리가 불가능하다. DB는 데이터 insert후 바로 조회가 가능하지만, ES는 insert후 잠깐의 딜레이가 필요하다. 이건 ES내부적으로 데이터를 처리하는 과정에서 필연적으로 발생하지만 매우 짧은시간이기때문에 문제가 되진 않는다.
+
+2. transaction과 rollback를 제공하지 않는다. (transaction 내에서 rollback을 시키는 작업의 비용이 큼)
+반면 ES는 DB와 다르게 여러 노드에 분산해서 데이터를 저장하기 때문에 트랜잭션 및 롤백을 지원하지 않는다.
+사용하는 비즈니스 로직이 트랜잭션에 대한 의존도가 높다면 ES의 도입이 어렵다.
+
+3. ES는 문서를 update할 수 없다. 내부적으로 API가 있지만 사용 시 데이터를 변경하는 것이 아닌 삭제 후 insert하는 것이다.
+비즈니스로직에서 데이터 업데이트가 빈번하게 발생할 경우 ES사용 시 클러스터 전체에 영향을 줄 수 있다.
+
+- ES 노드에서 실행해야 할 명령어
+# 1. 공통
+sudo yum install -y docker
+sudo systemctl start docker
+sudo chmod 666 /var/run/docker.sock
+
+sudo sysctl -w vm.max_map_count=262144
+
+## 각 노드의 network.publish.host 찾기 = ifconfig 명령어 실행
+
+# 2. 1번 노드에서만 실행시키는 명령어 (IP는 여러분의 인스턴스 IP를 적어주세요!!)
+docker network create somenetwork
+docker run -d --name elasticsearch --net somenetwork -p 9200:9200 -p 9300:9300 \
+-e "discovery.seed_hosts={1번 IP 빼고 나머지 3개 IP}" \ //중괄호를 제외하고 콤마로 다른 ES의 ip를 넣는다. 띄어쓰기 X
+-e "node.name=es01" \
+-e "cluster.initial_master_nodes=es01,es02,es03,es04" \
+-e "network.publish_host={1번 IP}" \
+elasticsearch:7.10.1
+
+# 3. 2번 노드에서 실행시키는 명령어
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 \
+-e "discovery.seed_hosts={2번 IP 빼고 나머지 3개 IP}" \
+-e "node.name=es02" \
+-e "cluster.initial_master_nodes=es01,es02,es03,es04" \
+-e "network.publish_host={2번 IP}" \
+elasticsearch:7.10.1
+
+# 4. 3번 노드에서 실행시키는 명령어
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 \
+-e "discovery.seed_hosts={3번 IP 빼고 나머지 3개 IP}" \
+-e "node.name=es03" \
+-e "cluster.initial_master_nodes=es01,es02,es03,es04" \
+-e "network.publish_host={3번 IP}" \
+elasticsearch:7.10.1
+
+# 5. 4번 노드에서 실행시키는 명령어
+docker run -d --name elasticsearch -p 9200:9200 -p 9300:9300 \
+-e "discovery.seed_hosts={4번 IP 빼고 나머지 3개 IP}" \
+-e "node.name=es04" \
+-e "cluster.initial_master_nodes=es01,es02,es03,es04" \
+-e "network.publish_host={4번 IP}" \
+elasticsearch:7.10.1

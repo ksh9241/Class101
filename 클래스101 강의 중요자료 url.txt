@@ -23,3 +23,8 @@ PR 의 3가지 방법 : https://meetup.toast.com/posts/122
 spring-boot profile 적용하기 : https://effectivesquid.tistory.com/entry/Spring-boot-profile-%EC%A0%81%EC%9A%A9%ED%95%98%EA%B8%B0
 
 DB성능 향상 방법 (인덱스) : https://mangkyu.tistory.com/96
+
+ES id는 왜 String인가?
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html#docs-index-api-path-params
+
+inverted index 이해하기 : https://cloudingdata.tistory.com/45
